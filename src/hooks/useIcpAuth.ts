@@ -1,3 +1,4 @@
+import { canisterId, createActor } from "@/utilities/icp/issuerFactory";
 import { Identity } from "@dfinity/agent";
 import { AuthClient } from "@dfinity/auth-client";
 import { Principal } from "@dfinity/principal";
@@ -14,7 +15,7 @@ type Auth = {
 declare global {
   interface Window {
     auth: Auth;
-    canister: any;
+    issuerCanister: any;
   }
 }
 
@@ -30,12 +31,17 @@ const useIcpAuth = () => {
     async function initializeContract() {
       const authClient = await AuthClient.create();
       window.auth = {} as any;
-      window.canister = {};
       window.auth.client = authClient;
       window.auth.isAuthenticated = await authClient.isAuthenticated();
       window.auth.identity = authClient.getIdentity();
       window.auth.principal = authClient.getIdentity()?.getPrincipal();
       window.auth.principalText = authClient.getIdentity()?.getPrincipal().toText();
+      window.issuerCanister = createActor(canisterId ?? "", {
+        agentOptions: {
+          host: "https://icp0.io",
+          identity: authClient.getIdentity(),
+        },
+      });
     }
 
     initializeContract();

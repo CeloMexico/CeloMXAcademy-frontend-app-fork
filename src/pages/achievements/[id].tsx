@@ -21,9 +21,8 @@ import MintCertificate from "@/components/sections/profile/modals/MintCertificat
 import { Certificate } from "@/types/certificate";
 import { User } from "@/types/bounty";
 import { IRootState } from "@/store";
-import useIcpAuth, { IDENTITY_PROVIDER } from "@/hooks/useIcpAuth";
-import { requestVerifiablePresentation, type VerifiablePresentationResponse } from "@dfinity/verifiable-credentials/request-verifiable-presentation";
-import { Principal } from "@dfinity/principal";
+import useIcpAuth from "@/hooks/useIcpAuth";
+import axiosInstance from "@/config/axios";
 
 /**
  * interface for Achievement multiSelector
@@ -46,7 +45,6 @@ const Achievement = () => {
     user: (state: IRootState) => state.user.data,
   });
   const [showMintCertificate, setShowMintCertificate] = useState(false);
-  const [jwtVC, setJwtVc] = useState("");
   const dispatch = useDispatch();
   const { locale, query } = useRouter();
   const { login } = useIcpAuth();
@@ -113,45 +111,20 @@ const Achievement = () => {
     return !achievement?.metadata?.image?.includes("/img/certificates/");
   }, [achievement]);
 
-  const requestVC = (principal: string) => {
+  const addCourseCompletionToTheIssuerCanister = async () => {
     if (!achievement?.metadata) return;
-    const { issuedOn, linkToWork, issuerName, name, narrative, image, comment } = achievement?.metadata;
+    const { name } = achievement?.metadata;
+    if (window.issuerCanister) return;
+    await window.issuerCanister.add_course_completion(name.toLowerCase().replaceAll(" ", "-"));
 
-    requestVerifiablePresentation({
-      onSuccess: (verifiablePresentation: VerifiablePresentationResponse) => {
-        const verifiablePresentationData = (verifiablePresentation as { Ok: string })?.Ok;
-        if (verifiablePresentationData) {
-          setJwtVc(verifiablePresentationData);
-        }
-      },
-      onError: (err: any) => {
-        console.log("An error occurred", err);
-      },
-      issuerData: {
-        origin: "https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/",
-        canisterId: Principal.fromText("bu5ax-5iaaa-aaaam-qbgcq-cai"),
-      },
-      credentialData: {
-        credentialSpec: {
-          credentialType: `${name} completion`,
-          arguments: {
-            issuedOn,
-            linkToWork,
-            image,
-            narrative,
-            comment,
-            issuerName,
-            name,
-          },
-        },
-        credentialSubject: Principal.fromText(principal),
-      },
-      identityProvider: new URL(IDENTITY_PROVIDER),
+    await axiosInstance.post("/certificate/complete", {
+      certificateId: achievement.id,
     });
+    await findCertificateById();
   };
 
   const onMint = () => {
-    if (isICPSubmission) return login((principal) => requestVC(principal));
+    if (isICPSubmission) return login(() => addCourseCompletionToTheIssuerCanister());
     setShowMintCertificate(true);
   };
 
@@ -216,9 +189,9 @@ const Achievement = () => {
                             Mint certificate
                           </ArrowButton>
                         )}
-                        {belongsToCurrentUser && !jwtVC && (
+                        {belongsToCurrentUser && !achievement.completed && (
                           <ArrowButton target="__blank" variant="primary" className="flex ml-auto mt-5" onClick={onMint}>
-                            Request verifiable credential
+                            Record Course Completion
                           </ArrowButton>
                         )}
                       </div>
@@ -240,20 +213,6 @@ const Achievement = () => {
                         <a href={ipfsUrl} target="_blank" className="text-xs underline">
                           {achievement.minting.tokenURI}
                         </a>
-                      </AchievementViewItem>
-                    </div>
-                  )}
-                  {achievement.community.name === "Internet Computer" && !!jwtVC && (
-                    <div className="flex flex-col gap-1">
-                      <AchievementViewItem name={"Credential JWT presentation"}>
-                        <small
-                          onClick={() => {
-                            window.navigator.clipboard.writeText(jwtVC);
-                          }}
-                          className="font-normal line-clamp-1 text-start my-2 cursor-pointer"
-                        >
-                          {jwtVC}
-                        </small>
                       </AchievementViewItem>
                     </div>
                   )}
