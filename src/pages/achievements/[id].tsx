@@ -114,7 +114,7 @@ const Achievement = () => {
   const addCourseCompletionToTheIssuerCanister = async () => {
     if (!achievement?.metadata) return;
     const { name } = achievement?.metadata;
-    if (window.issuerCanister) return;
+    if (!window.issuerCanister) return;
     await window.issuerCanister.add_course_completion(name.toLowerCase().replaceAll(" ", "-"));
 
     await axiosInstance.post("/certificate/complete", {
