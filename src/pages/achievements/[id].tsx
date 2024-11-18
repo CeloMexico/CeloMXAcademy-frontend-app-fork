@@ -198,7 +198,14 @@ const Achievement = () => {
                           </ArrowButton>
                         )}
                         {belongsToCurrentUser && !achievement.completed && (
-                          <ArrowButton target="__blank" variant="primary" className="flex ml-auto mt-5" loading={addCourseToCompletionPending} onClick={onMint}>
+                          <ArrowButton
+                            target="__blank"
+                            variant="primary"
+                            className="flex ml-auto mt-5"
+                            disabled={addCourseToCompletionPending}
+                            loading={addCourseToCompletionPending}
+                            onClick={onMint}
+                          >
                             Record Course Completion
                           </ArrowButton>
                         )}
