@@ -48,6 +48,7 @@ const Achievement = () => {
   const dispatch = useDispatch();
   const { locale, query } = useRouter();
   const { login } = useIcpAuth();
+  const [addCourseToCompletionPending, setAddCourseToCompletionPending] = useState(false);
 
   const findCertificateById = useCallback(async () => {
     await dispatch(findCertificate({ id: query.id as string }));
@@ -115,12 +116,19 @@ const Achievement = () => {
     if (!achievement?.metadata) return;
     const { name } = achievement?.metadata;
     if (!window.issuerCanister) return;
-    await window.issuerCanister.add_course_completion(name.toLowerCase().replaceAll(" ", "-"));
+    try {
+      setAddCourseToCompletionPending(true);
+      await window.issuerCanister.add_course_completion(name.toLowerCase().replaceAll(" ", "-"));
 
-    await axiosInstance.post("/certificate/complete", {
-      certificateId: achievement.id,
-    });
-    await findCertificateById();
+      await axiosInstance.post("/certificate/complete", {
+        certificateId: achievement.id,
+      });
+      await findCertificateById();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setAddCourseToCompletionPending(false);
+    }
   };
 
   const onMint = () => {
@@ -190,7 +198,7 @@ const Achievement = () => {
                           </ArrowButton>
                         )}
                         {belongsToCurrentUser && !achievement.completed && (
-                          <ArrowButton target="__blank" variant="primary" className="flex ml-auto mt-5" onClick={onMint}>
+                          <ArrowButton target="__blank" variant="primary" className="flex ml-auto mt-5" loading={addCourseToCompletionPending} onClick={onMint}>
                             Record Course Completion
                           </ArrowButton>
                         )}
