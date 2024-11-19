@@ -22,7 +22,7 @@ import { Certificate } from "@/types/certificate";
 import { User } from "@/types/bounty";
 import { IRootState } from "@/store";
 import useIcpAuth from "@/hooks/useIcpAuth";
-import axiosInstance from "@/config/axios";
+import api from "@/config/api";
 
 /**
  * interface for Achievement multiSelector
@@ -120,7 +120,7 @@ const Achievement = () => {
       setAddCourseToCompletionPending(true);
       await window.issuerCanister.add_course_completion(name.toLowerCase().replaceAll(" ", "-"));
 
-      await axiosInstance.post("/certificates/complete", {
+      await api(locale).client.post("/certificates/complete", {
         certificateId: achievement.id,
       });
       await findCertificateById();
