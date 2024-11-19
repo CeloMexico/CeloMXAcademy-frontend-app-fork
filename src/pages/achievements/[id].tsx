@@ -120,7 +120,7 @@ const Achievement = () => {
       setAddCourseToCompletionPending(true);
       await window.issuerCanister.add_course_completion(name.toLowerCase().replaceAll(" ", "-"));
 
-      await axiosInstance.post("/certificate/complete", {
+      await axiosInstance.post("/certificates/complete", {
         certificateId: achievement.id,
       });
       await findCertificateById();
