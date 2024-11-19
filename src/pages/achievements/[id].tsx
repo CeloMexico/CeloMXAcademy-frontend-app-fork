@@ -14,7 +14,7 @@ import Head from "next/head";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { useRouter } from "next/router";
 import { useDispatch } from "@/hooks/useTypedDispatch";
-import { findCertificate } from "@/store/services/profile/certificate.service";
+import { completeIcpCertificate, findCertificate } from "@/store/services/profile/certificate.service";
 import { useTranslation } from "next-i18next";
 import Logo from "@/icons/logo.svg";
 import MintCertificate from "@/components/sections/profile/modals/MintCertificate";
@@ -22,7 +22,6 @@ import { Certificate } from "@/types/certificate";
 import { User } from "@/types/bounty";
 import { IRootState } from "@/store";
 import useIcpAuth from "@/hooks/useIcpAuth";
-import api from "@/config/api";
 
 /**
  * interface for Achievement multiSelector
@@ -112,24 +111,20 @@ const Achievement = () => {
     return !achievement?.metadata?.image?.includes("/img/certificates/");
   }, [achievement]);
 
-  const addCourseCompletionToTheIssuerCanister = async () => {
+  const addCourseCompletionToTheIssuerCanister = useCallback(async () => {
     if (!achievement?.metadata) return;
     const { name } = achievement?.metadata;
     if (!window.issuerCanister) return;
     try {
       setAddCourseToCompletionPending(true);
       await window.issuerCanister.add_course_completion(name.toLowerCase().replaceAll(" ", "-"));
-
-      await api(locale).client.post("/certificates/complete", {
-        certificateId: achievement.id,
-      });
-      await findCertificateById();
+      await dispatch(completeIcpCertificate({ id: achievement.id }));
     } catch (err) {
       console.error("Failed to complete course: ", err);
     } finally {
       setAddCourseToCompletionPending(false);
     }
-  };
+  }, [achievement?.id, achievement?.metadata, dispatch, findCertificateById]);
 
   const onMint = () => {
     if (isICPSubmission) return login(() => addCourseCompletionToTheIssuerCanister());
