@@ -125,7 +125,7 @@ const Achievement = () => {
       });
       await findCertificateById();
     } catch (err) {
-      console.error(err);
+      console.error("Failed to complete course: ", err);
     } finally {
       setAddCourseToCompletionPending(false);
     }
