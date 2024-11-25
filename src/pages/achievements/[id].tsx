@@ -188,14 +188,14 @@ const Achievement = () => {
                         {!achievementMinted && belongsToCurrentUser && <MintCertificate show={showMintCertificate} close={() => setShowMintCertificate(false)} />}
 
                         {belongsToCurrentUser && !minted && !isICPSubmission && (
-                          <ArrowButton target="__blank" variant="primary" className="flex ml-auto mt-5" onClick={onMint}>
+                          <ArrowButton target="__blank" variant="outline-primary" className="flex ml-auto mt-5" onClick={onMint}>
                             Mint certificate
                           </ArrowButton>
                         )}
-                        {belongsToCurrentUser && !achievement.completed && (
+                        {belongsToCurrentUser && !achievement.completed && isICPSubmission && (
                           <ArrowButton
                             target="__blank"
-                            variant="primary"
+                            variant="outline-primary"
                             className="flex ml-auto mt-5"
                             disabled={addCourseToCompletionPending}
                             loading={addCourseToCompletionPending}
