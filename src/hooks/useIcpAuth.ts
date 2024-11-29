@@ -81,7 +81,6 @@ const useIcpAuth = () => {
 
           const principal = await authClient.getIdentity()?.getPrincipal().toText();
           initializeCanister(authClient.getIdentity());
-          console.log({ principal });
           callback(principal);
         },
       });
