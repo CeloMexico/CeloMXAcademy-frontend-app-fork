@@ -45,6 +45,10 @@ Any Promotions made available through the Service may be governed by rules that 
 
 If You participate in any Promotions, please review the applicable rules as well as our Privacy policy. If the rules for a Promotion conflict with these Terms, the Promotion rules will apply.
 
+## **Token Rewards and Forfeiture**
+
+The Service may, at the sole discretion of the Company, award token rewards as a discretionary incentive for learning achievements. Such token rewards are provided as a bonus and do not constitute a contractual or legally binding promise of payment or reward. Users acknowledge that no entitlement to any specific token reward exists, and that these rewards are granted solely at the Company’s discretion. Furthermore, if a user does not request a payout for any awarded tokens within three (3) months from the date of issuance, the Company reserves the right to delete or forfeit the unclaimed tokens without further notice or liability. By continuing to use the Service, users agree to these conditions regarding token rewards.
+
 ## **User Accounts**
 
 When You create an account with Us, You must provide Us information that is accurate, complete, and current at all times. Failure to do so constitutes a breach of the Terms, which may result in immediate termination of Your account on Our Service.
