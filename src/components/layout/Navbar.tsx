@@ -1,6 +1,6 @@
 import { ReactElement, useMemo } from "react";
 import hexToRgba from "hex-to-rgba";
-import Logo from "@/icons/logo.svg";
+import Image from "next/image";
 import NavItem from "@/components/ui/NavItem";
 import NotificationPopup from "@/components/popups/NotificationPopup";
 import UserPopup from "@/components/popups/user";
@@ -90,11 +90,8 @@ export default function Navbar({ settings, sidebarBurgerColor = false }: NavbarP
     <div className="text-gray-900" style={containerStyle}>
       <div className="content-wrapper lg:py-12 py-6 flex relative">
         <ul className="relative">
-          <NavItem to="/" type="logo w-8 h-8 md:w-11 md:h-11">
-            <Logo />
-          </NavItem>
-          <NavItem to="/" type="brand">
-            {t("app.name")}
+          <NavItem to="/" type="logo">
+            <Image src="/logo.png" alt="Celo México Academy Logo" width={300} height={100} />
           </NavItem>
         </ul>
         {isAuthenticatedAndVerified && (

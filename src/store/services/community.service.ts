@@ -27,7 +27,7 @@ export const communityService = createApi({
           return data;
         } catch (error) {
           dispatch(setBusy(false));
-          dispatch(setError(error));
+          dispatch(setError({ message: error?.message || String(error) }));
         }
       },
     }),
@@ -47,7 +47,7 @@ export const communityService = createApi({
           return data;
         } catch (error) {
           dispatch(setBusy(false));
-          dispatch(setError(error));
+          dispatch(setError({ message: error?.message || String(error) }));
         }
       },
     }),
@@ -68,7 +68,7 @@ export const communityService = createApi({
           return data
         }
         catch (error) {
-          dispatch(setError(error))
+          dispatch(setError({ message: error?.message || String(error) }));
           return null
         }
         finally {

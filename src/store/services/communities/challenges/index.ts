@@ -31,9 +31,9 @@ export const challengeService = createApi({
           dispatch(setCurrentChallenge(data));
           dispatch(setChallengeSubmission(data.submission));
           return data;
-        } catch (error) {
+        } catch (error: any) {
           dispatch(setBusy(false));
-          dispatch(setError(error));
+          dispatch(setError({ message: error?.message || String(error) }));
         }
       },
     }),
@@ -73,9 +73,9 @@ export const challengeService = createApi({
           dispatch(setChallengeSubmission(data.submission));
           dispatch(setSubmissionLoading(false));
           return data;
-        } catch (error) {
+        } catch (error: any) {
           dispatch(setBusy(false));
-          dispatch(setError(error));
+          dispatch(setError({ message: error?.message || String(error) }));
         }
       },
     }),
