@@ -25,7 +25,7 @@ export const communityService = createApi({
           const { data } = await queryFulfilled;
           dispatch(setAllCommunities(data));
           return data;
-        } catch (error) {
+        } catch (error: any) {
           dispatch(setBusy(false));
           dispatch(setError({ message: error?.message || String(error) }));
         }
@@ -45,7 +45,7 @@ export const communityService = createApi({
           dispatch(setCurrentCommunity(data));
           dispatch(setColors(data.colors));
           return data;
-        } catch (error) {
+        } catch (error: any) {
           dispatch(setBusy(false));
           dispatch(setError({ message: error?.message || String(error) }));
         }
@@ -67,7 +67,7 @@ export const communityService = createApi({
           dispatch(setLearningModulesList(data.learningModules))
           return data
         }
-        catch (error) {
+        catch (error: any) {
           dispatch(setError({ message: error?.message || String(error) }));
           return null
         }
