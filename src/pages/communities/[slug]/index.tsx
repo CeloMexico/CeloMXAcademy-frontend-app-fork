@@ -24,9 +24,14 @@ export default function Slug(props: {
     community: Community;
     challenges: Challenge[];
   };
-}): ReactElement {
-  const { community, challenges } = props.pageProps;
+}): ReactElement | null {
   const { t } = useTranslation();
+  const { community, challenges } = props.pageProps;
+
+  if (!community) {
+    return null;
+  }
+
   return (
     <>
       <Head>
