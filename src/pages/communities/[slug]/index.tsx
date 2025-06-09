@@ -89,16 +89,24 @@ export const getStaticProps = wrapper.getStaticProps((store: any) => async ({ lo
 });
 
 export const getStaticPaths = async (context: GetStaticPathsContext) => {
-  const locale = context.defaultLocale;
-  const communities = await fetchCommunities({ locale: locale ?? "en" });
-  const paths = communities.map((community) => ({
-    params: {
-      slug: community.slug,
-    },
-  }));
+  try {
+    const locale = context.defaultLocale;
+    const communities = await fetchCommunities({ locale: locale ?? "en" });
+    const paths = communities.map((community) => ({
+      params: {
+        slug: community.slug,
+      },
+    }));
 
-  return {
-    paths,
-    fallback: "blocking",
-  };
+    return {
+      paths,
+      fallback: true,
+    };
+  } catch (error) {
+    // If API is not available during build, return empty paths
+    return {
+      paths: [],
+      fallback: true,
+    };
+  }
 };
