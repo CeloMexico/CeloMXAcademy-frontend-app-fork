@@ -16,10 +16,10 @@ export const communitiesArray: Community[] = [
     summary: "A mobile-first, carbon-negative blockchain supporting global payments and DeFi.",
     icon: "https://cms.solow.io/wp-content/uploads/2024/03/InjXBNx9_400x400.jpg",
     image: "https://cms.solow.io/wp-content/uploads/2024/03/InjXBNx9_400x400.jpg",
-    name: "Celo",
+    name: "Celo composer en Español",
     slug: "celo",
     active: true,
-    description: "Empowering mobile-first DeFi on an EVM-compatible blockchain.",
+    description: "Aprender a montar una plantilla de MiniPay de manera sencilla en Español.",
     colors: {
       text: "#000000",
       textAccent: "#4d4d00",
