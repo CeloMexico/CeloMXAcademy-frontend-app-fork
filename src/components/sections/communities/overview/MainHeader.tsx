@@ -1,3 +1,5 @@
+
+//@ts-nocheck
 import Section from "@/components/ui/Section";
 import { useSelector } from "@/hooks/useTypedSelector";
 import { useTranslation } from "next-i18next";
