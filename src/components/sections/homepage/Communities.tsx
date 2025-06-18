@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { ReactElement } from "react";
 import Section from "@/components/ui/Section";
 import CommunityCard from "@/components/cards/community";

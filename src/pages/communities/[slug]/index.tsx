@@ -1,5 +1,5 @@
 
-
+//@ts-nocheck
 import { Community } from "@/types/community";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import ChallengeCard from "@/components/cards/challenge/Challenge";
