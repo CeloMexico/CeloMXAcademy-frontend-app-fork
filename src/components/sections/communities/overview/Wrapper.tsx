@@ -26,10 +26,7 @@ export default function Wrapper({ children, filter, testId = "wrapperId" }: Wrap
       <MainHeaderSection />
       <Section>
         <div className="w-full md:flex gap-36 mx-auto mt-6 md:mt-17">
-          <div className="hidden md:grid w-4/12">
-            <CommunitySidebar />
-            {filter}
-          </div>
+       
           <div className="md:w-2/3">{children}</div>
         </div>
       </Section>

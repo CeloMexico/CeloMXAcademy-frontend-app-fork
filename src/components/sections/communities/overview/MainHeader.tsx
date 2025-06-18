@@ -3,6 +3,73 @@ import { useSelector } from "@/hooks/useTypedSelector";
 import { useTranslation } from "next-i18next";
 import Image from "next/image";
 import { ReactElement } from "react";
+
+const celoCommunity: Community = {
+  id: "celo",
+  ref: "community-celo",
+  created_at: new Date(),
+  updated_at: new Date(),
+  summary: "A mobile-first, carbon-negative blockchain supporting global payments and DeFi.",
+  icon: "https://cms.solow.io/wp-content/uploads/2024/03/InjXBNx9_400x400.jpg",
+  image: "https://cms.solow.io/wp-content/uploads/2024/03/InjXBNx9_400x400.jpg",
+  name: "Celo",
+  slug: "celo",
+  active: true,
+  description: "Empowering mobile-first DeFi on an EVM-compatible blockchain.",
+  colors: {
+    text: "#000000",
+    textAccent: "#4d4d00",
+    accent: "#333300",
+    primary: "#fcfe51",
+    secondary: "#f7f98e",
+    highlight: "#ffffc2",
+    muted: "#e6e68a",
+    cover: {
+      background: "#fcfe51",
+      text: "#000000",
+      primary: "#fcfe51",
+      accent: "#333300",
+    },
+  },
+  metadata: {
+    id: "meta-celo",
+    ref: "meta-celo",
+    created_at: new Date(),
+    updated_at: new Date(),
+    visibility: "public",
+    position: 1,
+    locale: "en",
+    title: "Celo Community",
+    summary: "Join the Celo community and build the future of mobile-first DeFi.",
+    tags: ["DeFi", "Mobile", "Blockchain"],
+    type: "ecosystem",
+    image: "https://cms.solow.io/wp-content/uploads/2024/03/InjXBNx9_400x400.jpg",
+    timestamp: Date.now(),
+  },
+  timestamp: Date.now(),
+  rewards: [],
+  reward: {
+    id: "reward-celo-001",
+    ref: "submission-reward-celo",
+    created_at: new Date(),
+    updated_at: new Date(),
+    challenge: "challenge-celo-001",
+    type: "SUBMISSION",
+    community: "celo",
+    token: "CELO",
+    stable: false,
+    amount: 50,
+    timestamp: Date.now(),
+    fiatCurrency: "USD",
+    distribution: undefined,
+  },
+  courses: 2,
+  challenges: 1,
+  duration: 7,
+  can_mint_certificates: true,
+};
+
+
 /**
  * Represents the Community Section
  * @date 4/13/2023 - 5:56:41 AM
@@ -12,7 +79,7 @@ import { ReactElement } from "react";
  */
 export default function CommunitySection(): ReactElement {
   const { t } = useTranslation();
-  const community = useSelector((state) => state.communities.current);
+  const community = celoCommunity;
   const submissions = community?.metadata?.submissions || 0;
   const feedbacks = community?.metadata?.feedbacks || 0;
 
@@ -30,7 +97,7 @@ export default function CommunitySection(): ReactElement {
           </div>
         </div>
         <div className="flex flex-col max-w-xs mt-0 sm:-mt-15 lg:-mt-8 md:max-w-xl lg:flex-row lg:items-center">
-          <div className="my-2 text-sm">
+          {/* <div className="my-2 text-sm">
             <span>
               <strong>{submissions} </strong>
               {t("communities.submissions")}
@@ -40,7 +107,7 @@ export default function CommunitySection(): ReactElement {
               {t("communities.feedbacks")}
             </span>
             <div />
-          </div>
+          </div> */}
         </div>
       </div>
     </Section>

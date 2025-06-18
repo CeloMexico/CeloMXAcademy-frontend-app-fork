@@ -45,7 +45,7 @@ export default function MainSection({ testId = "mainSectionId" }: { testId?: str
       </div>
       <div className="flex justify-between">
         <div className="w-full max-w-xs hidden lg:block">
-          <Link href="/communities">
+          <Link href="/communities/celo">
             <ArrowButton minWidthClass="min-w-62" className="py-4 pl-7.5 pr-5.75" arrowClasses="text-white">
               {t("page.index.main.button")}
             </ArrowButton>

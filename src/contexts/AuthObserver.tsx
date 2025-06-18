@@ -1,18 +1,40 @@
 import { ReactNode, createContext, useCallback, useEffect, useMemo, useState } from "react";
-import { User, onAuthStateChanged, onIdTokenChanged } from "firebase/auth";
-import { auth } from "@/config/firebase";
-import { setAuthData, setIsAuthLoading } from "@/store/feature/auth.slice";
+import { useRouter } from "next/router";
 import { useDispatch } from "@/hooks/useTypedDispatch";
+import { useSelector } from "@/hooks/useTypedSelector";
+
 import { fetchUser } from "@/store/services/user.service";
 import { getToken } from "@/store/feature/user.slice";
-import { useRouter } from "next/router";
+import { setAuthData, setIsAuthLoading } from "@/store/feature/auth.slice";
 import { clearError } from "@/store/feature/index.slice";
 import { fetchUserProfile } from "@/store/services/profile/users.service";
 import { fetchAllProfileCommunities } from "@/store/services/profile/profileCommunities.service";
 import { setListProfileCommunities } from "@/store/feature/profile/communities.slice";
 import Loader from "@/components/ui/Loader";
-import { useSelector } from "@/hooks/useTypedSelector";
 import { AUTH_TOKEN } from "@/constants/localStorage";
+
+// ✳️ Safe mock wrapper
+let onAuthStateChangedSafe = (_auth: any, cb: (user: any) => void) => {
+  console.warn("Firebase not configured: using mock onAuthStateChanged");
+  cb(null);
+};
+let onIdTokenChangedSafe = (_auth: any, cb: (user: any) => void) => {
+  console.warn("Firebase not configured: using mock onIdTokenChanged");
+  cb(null);
+};
+let auth: any = null;
+
+try {
+  // @ts-ignore
+  const { auth: realAuth } = require("@/config/firebase");
+  // @ts-ignore
+  const { onAuthStateChanged, onIdTokenChanged } = require("firebase/auth");
+  auth = realAuth;
+  onAuthStateChangedSafe = onAuthStateChanged;
+  onIdTokenChangedSafe = onIdTokenChanged;
+} catch (err) {
+  console.warn("Firebase not available, running without auth observer.");
+}
 
 const UserAuthContext = createContext(null);
 
@@ -22,37 +44,38 @@ export default function AuthObserver({ children }: { children: ReactNode }) {
   const route = router.asPath;
   const [loading, setLoading] = useState(true);
   const user = useSelector((state) => state.user.data);
-  function matchesRoutes(path: string, routes: string[]) {
-    const matches = routes?.filter((route) => path === route);
-    return matches?.length > 0;
-  }
+
+  const matchesRoutes = (path: string, routes: string[]) =>
+    routes?.some((route) => path === route);
 
   const isUserRoute = useMemo(
-    () => (path: string) => {
-      return (
-        path.startsWith("/bounties/") || matchesRoutes(path, ["/bounties", "/profile", "/profile/wallets", "/profile/referrals", "/profile/settings", "/profile/notifications"])
-      );
-    },
+    () => (path: string) =>
+      path.startsWith("/bounties/") ||
+      matchesRoutes(path, [
+        "/bounties",
+        "/profile",
+        "/profile/wallets",
+        "/profile/referrals",
+        "/profile/settings",
+        "/profile/notifications",
+      ]),
     []
   );
 
   const isGuestRoute = useMemo(
-    () => (path: string) => {
-      return matchesRoutes(path, ["/signup", "/password-reset"]);
-    },
+    () => (path: string) =>
+      matchesRoutes(path, ["/signup", "/password-reset"]),
     []
   );
 
-  const emailVerificationChecker: (auth: User | null) => Promise<void> = useCallback(
-    async (auth: User | null) => {
+  const emailVerificationChecker = useCallback(
+    async (authUser: any) => {
       if (route.startsWith("/verify-email")) return;
-
-      if (route.startsWith("/email-verification") && !auth) {
+      if (route.startsWith("/email-verification") && !authUser) {
         await router.push("/");
         return;
       }
-
-      if (auth && !auth.emailVerified && !route.startsWith("/email-verification")) {
+      if (authUser && !authUser.emailVerified && !route.startsWith("/email-verification")) {
         await router.replace("/email-verification");
         return;
       }
@@ -61,51 +84,53 @@ export default function AuthObserver({ children }: { children: ReactNode }) {
   );
 
   const guestAndUserRoutesChecker = useCallback(
-    async (auth: User | null) => {
-      if (auth && isGuestRoute(route)) {
+    async (authUser: any) => {
+      if (authUser && isGuestRoute(route)) {
         await router.replace("/");
         return;
       }
 
-      if (!auth && isUserRoute(route)) {
+      if (!authUser && isUserRoute(route)) {
         await router.replace("/login");
         return;
       }
 
-      if (route.startsWith("/profile") && auth && auth.emailVerified) {
+      if (route.startsWith("/profile") && authUser && authUser.emailVerified) {
         const username = (router.query.username as string) || user?.username || "";
         if (username) {
           dispatch(fetchUserProfile(username));
-          dispatch(fetchAllProfileCommunities(auth?.displayName || ""));
+          dispatch(fetchAllProfileCommunities(authUser?.displayName || ""));
         }
       }
 
       if (route.startsWith("/profile")) {
-        const { data } = await dispatch(fetchAllProfileCommunities((router.query?.username || auth?.displayName) as string));
+        const { data } = await dispatch(fetchAllProfileCommunities((router.query?.username || authUser?.displayName) as string));
         dispatch(setListProfileCommunities(data));
       }
     },
     [dispatch, isGuestRoute, isUserRoute, route, router]
   );
 
-  useEffect(() => {
-    onIdTokenChanged(auth, async (user) => {
-      dispatch(setAuthData(user?.toJSON()));
-      localStorage.setItem(AUTH_TOKEN, (await user?.getIdToken()) ?? "");
-      await dispatch(getToken());
-    });
+  // useEffect(() => {
+  //   // Mock-safe token and auth listeners
+  //   onIdTokenChangedSafe(auth, async (authUser) => {
+  //     dispatch(setAuthData(authUser?.toJSON?.() || null));
+  //     const token = (await authUser?.getIdToken?.()) ?? "";
+  //     if (token) localStorage.setItem(AUTH_TOKEN, token);
+  //     await dispatch(getToken());
+  //   });
 
-    onAuthStateChanged(auth, async (user) => {
-      setLoading(true);
-      dispatch(setIsAuthLoading(true));
-      await emailVerificationChecker(user);
-      await guestAndUserRoutesChecker(user);
-      dispatch(setAuthData(user?.toJSON()));
-      await dispatch(fetchUser());
-      setLoading(false);
-      dispatch(setIsAuthLoading(false));
-    });
-  }, [dispatch, emailVerificationChecker, guestAndUserRoutesChecker]);
+  //   onAuthStateChangedSafe(auth, async (authUser) => {
+  //     setLoading(true);
+  //     dispatch(setIsAuthLoading(true));
+  //     await emailVerificationChecker(authUser);
+  //     await guestAndUserRoutesChecker(authUser);
+  //     dispatch(setAuthData(authUser?.toJSON?.() || null));
+  //     await dispatch(fetchUser());
+  //     setLoading(false);
+  //     dispatch(setIsAuthLoading(false));
+  //   });
+  // }, [dispatch, emailVerificationChecker, guestAndUserRoutesChecker]);
 
   useEffect(() => {
     dispatch(clearError());
