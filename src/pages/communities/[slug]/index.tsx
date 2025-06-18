@@ -390,7 +390,7 @@ const celoCommunity: Community = {
   ref: "community-celo",
   created_at: new Date(),
   updated_at: new Date(),
-  summary: "A mobile-first, carbon-negative blockchain supporting global payments and DeFi.",
+  summary: "Aprender a montar una. plantilla de MiniPay de manera sencilla en Español.",
   icon: "https://cms.solow.io/wp-content/uploads/2024/03/InjXBNx9_400x400.jpg",
   image: "https://cms.solow.io/wp-content/uploads/2024/03/InjXBNx9_400x400.jpg",
   name: "Celo",
